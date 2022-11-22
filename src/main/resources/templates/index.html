@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html
+        lang="en" xmlns:th="http://www.thymeleaf.org">>
+<head>
+  <meta charset="UTF-8" />
+  <title>Votre Banque</title>
+  <link rel="stylesheet" href="../static/bootstrap.min.css"
+        th:href="@{bootstrap.min.css}"
+  />
+
+</head>
+<body>
+<div class="container mt-3">
+  <div class="col-md-6 mt-3">
+    <div class="card">
+      <div class="card-header bg-primary">
+        Consultation d'un Compte
+      </div>
+      <div class="card-body">
+        <form th:action="@{/consultercompte}" method="get">
+          <div>
+            <label>Code Cpte :</label>
+            <input type="text" name="codeCompte" />
+            <button type="submit" class="btn btn-primary">Ok</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-primary">
+        Informations sur le Compte
+      </div>
+      <div class="card-body">
+        <div>
+          <label>Code Compte : </label>
+          <label th:text="${compte.code}"></label>
+
+        </div>
+        <div>
+          <label>Solde du Compte : </label>
+          <label th:text="${compte.solde}"></label>
+
+        </div>
+        <div>
+          <label>Date Création : </label>
+          <label th:text="${compte.dateCreation}"></label>
+
+        </div>
+        <div>
+          <label>Type du Compte : </label>
+          <label th:text="${compte.class.simpleName}"></label>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-primary">
+        Operation sur le Compte
+      </div>
+      <div class="card-body">
+
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-primary">
+        Liste des operations
+      </div>
+      <div class="card-body">
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

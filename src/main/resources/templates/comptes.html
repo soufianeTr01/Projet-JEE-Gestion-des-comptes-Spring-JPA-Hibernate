@@ -1,0 +1,165 @@
+ <!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout"
+   
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>SOSOBANK</title>
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a th:href="@{/operations}" >Operation
+                    </a>
+                </li>
+
+
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              
+                <li>
+                    <a th:href="@{/login?logout}" >Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+    <div  class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Consultation d'un compte</div>
+            <div class="panel-body">
+                <form th:action="@{/consulterCompte}" method="get">
+                    <div>
+                        <label>Code Compte : </label>
+                        <input type="text" name="codeCompte" th:value="${codeCompte}" >
+                        <button type="submit" class="btn btn-primary">OK</button>
+                    </div>
+                </form>
+                <div th:if="${exception}" th:text="${exception.message}" class="text text-danger" >
+            </div>
+        </div>
+        </div>
+    <div class="panel panel-primary" th:if="${compte}">
+            <div class="panel-heading">Information sur le compte</div>
+            <div class="panel-body">
+                <div>
+                    <label>Client: </label>
+                    <label th:text="${compte.client.nom}"></label>
+                </div>
+                <div>
+                <label>Code : </label>
+                <label th:text="${compte.codeCompte}"></label>
+                </div>
+                <div>
+                <label>Date creation : </label>
+                <label th:text="${compte.dateCreation}"></label>
+                </div>
+                <div>
+                <label>Solde : </label>
+                <label th:text="${compte.solde}"></label>
+                </div>
+                <div>
+                    <label>Type : </label>
+                    <label th:text="${compte.class.simpleName}"></label>
+                </div>
+                <div th:if="${compte.class.simpleName} == 'CompteCourant'">
+                    <label>Decouvert : </label>
+                    <label th:text="${compte.decouvert}"></label>
+                </div>
+                <div th:if="${compte.class.simpleName} == 'CompteEpargne'">
+                    <label>Taux : </label>
+                    <label th:text="${compte.taux}"></label>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6"  th:if="${compte}">
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="panel panel-primary" >
+            <div class="panel-heading">Operations sur le compte</div>
+            <div class="panel-body">
+                <form th:action="@{/saveOperation}" method="post">
+                    <div>
+                        <label>Compte : </label>
+                        <input type="hidden" name="codeCompte" th:value="${compte.codeCompte}">
+                        <label th:text="${codeCompte}"></label>
+                    </div>
+                    <div>
+                        <input type="radio" name="typeOperation" th:value="VERS" checked="checked"
+                               onchange="document.getElementById('forVirement').style.display='none'" />
+                        <label>Versement : </label>
+                        <input type="radio" name="typeOperation" th:value="RETR"
+                               onchange="document.getElementById('forVirement').style.display='none'" />
+                        <label>Retrait : </label>
+                        <input type="radio" name="typeOperation"  th:value="VIRM"
+                               onchange="document.getElementById('forVirement').style.display='block'" />
+
+                        <label>Virement : </label>
+                    </div>
+                    <div id="forVirement" style="display:none">
+                        <label >Vers : </label>
+                        <input type="text" name="codeCompte2" />
+                    </div>
+                    <div>
+                        <label>Montant : </label>
+                        <input type="text" name="montant" />
+                    </div>
+                    <div class="text-danger" th:text="${#httpServletRequest.getParameter('error')}">
+
+                    </div>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+        <div class="panel panel-primary" th:if="${compte}">
+            <div class="panel-heading">liste des operations</div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Num</th><th>Type</th><th>Date</th><th>Montant</th>
+                    </tr>
+
+                    <tr th:each="o : ${listoperation}">
+                        <td th:text="${o.numOperation}"></td>
+                        <td th:text="${o.class.simpleName}"></td>
+                        <td th:text="${o.dateOperation}"></td>
+                        <td th:text="${o.montant}"></td>
+                    </tr>
+                </table>
+                
+            </div>
+            <div class="container">
+                <ul class="nav nav-pills" >
+                    <li th:class="${pageCourant}==${status.index}?active:''" th:each="p,status : ${totalPages}">
+                        <a class="btn btn-primary"  th:href="@{/consulterCompte(codeCompte=${codeCompte},page=${status.index})}" th:text="${status.index}"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    </div>
+    </div>
+</section>
+<footer class="navbar-fixed-bottom">
+    <hr/>
+    <div class="container">
+        <small>
+            @SOSOOBANK
+        </small>
+    </div>
+</footer>
+</body>
+</html>
